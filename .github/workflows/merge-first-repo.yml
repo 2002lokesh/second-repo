@@ -1,35 +1,43 @@
-name: Merge Repositories
+name: Update Second Repository
 
 on:
   push:
     branches:
-      - main  # Adjust as necessary
+      - main  # Trigger this workflow on push to the main branch
 
 jobs:
-  merge:
+  update-second-repo:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout second-repo
+      # Step 1: Checkout First Repository (first-repo)
+      - name: Checkout First Repository
         uses: actions/checkout@v2
+        with:
+          repository: 2002lokesh/first-repo  # Your first repository
+          token: ${{ secrets.FIRST_REPO_TOKEN }}  # Your Personal Access Token (PAT)
+          path: first-repo  # Path to clone the first repository
 
-      - name: Clone first-repo
-        run: |
-          git clone https://github.com/2002lokesh/first-repo.git temp-first-repo
-          cp -r temp-first-repo/* .  # Copy files from first-repo to second-repo
+      # Step 2: Checkout Second Repository (second-repo)
+      - name: Checkout Second Repository
+        uses: actions/checkout@v2
+        with:
+          repository: 2002lokesh/second-repo  # Your second repository
+          token: ${{ secrets.FIRST_REPO_TOKEN }}  # Same PAT used for authentication
+          path: second-repo  # Path to clone the second repository
 
-      - name: Set up Git
+      # Step 3: Copy All Files and Directories from First to Second Repository
+      - name: Copy All Files from First Repo to Second Repo
         run: |
-          git config --global user.email "lokeshkcse314@gmail.com"
-          git config --global user.name "2002lokesh"
+          # Copy everything (all files and directories) from the first repo to the second repo
+          cp -r first-repo/* second-repo/
 
-      - name: Commit changes
+      # Step 4: Commit and Push Changes to the Second Repository
+      - name: Commit and Push Changes
         run: |
-          git add .  # Stage all changes
-          git commit -m "Merge files from first-repo" || echo "No changes to commit"
-
-      - name: Push changes to second-repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.FIRST_REPO_TOKEN }}  # Use your PAT stored as a secret
-        run: |
-          git push https://${{ secrets.FIRST_REPO_TOKEN }}@github.com/2002lokesh/second-repo.git main  # Push changes
+          cd second-repo
+          git config user.name "2002lokesh"  # Your GitHub username
+          git config user.email "lokeshkcse314@gmail.com"  # Your email for commits
+          git add .  # Stage the changes
+          git commit -m "Auto-update: Sync all files from first-repo to second-repo" || echo "No changes to commit"  # Commit message
+          git push origin main  # Push changes to the main branch of second-repo

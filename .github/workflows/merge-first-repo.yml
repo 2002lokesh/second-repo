@@ -14,16 +14,18 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Clone first-repo
-        run: git clone https://github.com/2002lokesh/first-repo.git temp-first-repo
+        run: |
+          git clone https://${{ secrets.FIRST_REPO_TOKEN }}@github.com/2002lokesh/first-repo.git temp-first-repo
 
       - name: Set Git User
         run: |
-          git config --local user.email "lokeshkcse314@gmail.com"  # Replace with your email
-          git config --local user.name "2002lokesh"                # Replace with your name
+          git config --local user.email "lokeshkcse314@gmail.com"  # Set your email
+          git config --local user.name "2002lokesh"                # Set your username
 
       - name: Copy files from first-repo to second-repo
         run: |
           cp -r temp-first-repo/* .  # Copy files to the current directory
+          rm -rf temp-first-repo  # Clean up the temp directory
 
       - name: Commit and push changes
         run: |

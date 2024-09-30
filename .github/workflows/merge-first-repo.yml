@@ -1,34 +1,27 @@
-name: Merge First Repo Files
+name: Merge Repositories
 
 on:
   push:
     branches:
-      - main  # Change this to your default branch if needed
+      - main  # Adjust the branch if necessary
 
 jobs:
   merge:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout second-repo
         uses: actions/checkout@v2
+        with:
+          repository: 2002lokesh/second-repo
+          token: ${{ secrets.FIRST_REPO_TOKEN }}  # Use the token for checkout
 
       - name: Clone first-repo
         run: |
-          git clone https://${{ secrets.PAT_TOKEN }}@github.com/2002lokesh/first-repo.git temp-first-repo
-
-      - name: Set Git User
-        run: |
-          git config --local user.email "lokeshkcse314@gmail.com"  # Set your email
-          git config --local user.name "2002lokesh"                # Set your username
-
-      - name: Copy files from first-repo to second-repo
-        run: |
-          cp -r temp-first-repo/* .  # Copy files to the current directory
-          rm -rf temp-first-repo  # Clean up the temp directory
+          git clone https://github.com/2002lokesh/first-repo.git temp-first-repo
+          cp -r temp-first-repo/* .  # Copy files from first-repo to second-repo
 
       - name: Commit and push changes
         run: |
           git add .  # Stage all changes
           git commit -m "Merge files from first-repo" || echo "No changes to commit"
-          git push https://${{ secrets.PAT_TOKEN }}@github.com/2002lokesh/second-repo.git main  # Push changes to the second-repo
+          git push https://${{ secrets.FIRST_REPO_TOKEN }}@github.com/2002lokesh/second-repo.git main  # Use the PAT here

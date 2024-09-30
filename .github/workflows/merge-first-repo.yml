@@ -18,6 +18,11 @@ jobs:
           git clone https://github.com/2002lokesh/first-repo.git temp-first-repo
           cp -r temp-first-repo/* .  # Copy files from first-repo to second-repo
 
+      - name: Set up Git
+        run: |
+          git config --global user.email "lokeshkcse314@gmail.com"
+          git config --global user.name "2002lokesh"
+
       - name: Commit changes
         run: |
           git add .  # Stage all changes

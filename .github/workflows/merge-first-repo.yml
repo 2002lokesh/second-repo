@@ -3,25 +3,28 @@ name: Merge Repositories
 on:
   push:
     branches:
-      - main  # Adjust the branch if necessary
+      - main  # Adjust as necessary
 
 jobs:
   merge:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout second-repo
         uses: actions/checkout@v2
-        with:
-          repository: 2002lokesh/second-repo
-          token: ${{ secrets.FIRST_REPO_TOKEN }}  # Use the token for checkout
 
       - name: Clone first-repo
         run: |
           git clone https://github.com/2002lokesh/first-repo.git temp-first-repo
           cp -r temp-first-repo/* .  # Copy files from first-repo to second-repo
 
-      - name: Commit and push changes
+      - name: Commit changes
         run: |
           git add .  # Stage all changes
           git commit -m "Merge files from first-repo" || echo "No changes to commit"
-          git push https://${{ secrets.FIRST_REPO_TOKEN }}@github.com/2002lokesh/second-repo.git main  # Use the PAT here
+
+      - name: Push changes to second-repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.FIRST_REPO_TOKEN }}  # Use your token
+        run: |
+          git push https://${{ secrets.FIRST_REPO_TOKEN }}@github.com/2002lokesh/second-repo.git main  # Push changes

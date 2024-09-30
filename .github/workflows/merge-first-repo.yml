@@ -1,0 +1,30 @@
+name: Merge First Repo Files
+
+on:
+  push:  # Adjust this as needed (e.g., pull_request, schedule, etc.)
+    branches:
+      - main  # Specify the branch to trigger the action
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout second-repo
+        uses: actions/checkout@v2
+
+      - name: Clone first-repo
+        run: |
+          git clone https://github.com/2002lokesh/first-repo.git
+          cd first-repo
+          git checkout main  # or the specific branch you want to merge
+
+      - name: Merge first-repo into second-repo
+        run: |
+          cp -r first-repo/* .  # Copy files from first-repo to second-repo
+          git add .  # Stage all changes
+          git commit -m "Merge files from first-repo" || echo "No changes to commit"
+          git push origin main  # Push changes to second-repo
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.FIRST_REPO_TOKEN }}

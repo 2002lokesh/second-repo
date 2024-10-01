@@ -19,4 +19,4 @@ jobs:
 
       - name: SSH into Azure Server
         run: |
-          ssh -i development.pem azureuser@172.188.42.27 "echo 'Successfully connected to Azure!'"
+          ssh -i Development.pem azureuser@172.188.42.27 "echo 'Successfully connected to Azure!'"

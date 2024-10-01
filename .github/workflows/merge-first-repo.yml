@@ -1,25 +1,22 @@
-name: List Files on Server
+name: SSH into Azure Server
 
 on:
   push:
     branches:
-      - main
+      - main  # Change this to your default branch if necessary
 
 jobs:
-  list_files:
+  ssh-into-azure:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Setup SSH
+      - name: Create PEM file from secret
         run: |
-          echo "$SSH_PRIVATE_KEY" > private_key
-          chmod 600 private_key
+          echo "${{ secrets.AZURE_PEM_FILE }}" > development.pem
+          chmod 600 development.pem  # Set permissions
 
-      - name: List files on remote server
+      - name: SSH into Azure Server
         run: |
-          ssh -i private_key azureuser@172.188.42.27 "ls -la"
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh -i development.pem azureuser@172.188.42.27 "echo 'Successfully connected to Azure!'"

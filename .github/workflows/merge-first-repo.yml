@@ -1,30 +1,22 @@
-name: List Server Files
+name: List Files on Server
 
 on:
   push:
     branches:
-      - main  # Trigger this workflow on push to the main branch
+      - main
 
 jobs:
-  list-server-files:
+  list_files:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout First Repository (first-repo)
-      - name: Checkout First Repository
+      - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          repository: 2002lokesh/first-repo  # Your first repository
-          token: ${{ secrets.FIRST_REPO_TOKEN }}  # Your Personal Access Token (PAT)
-          path: first-repo  # Path to clone the first repository
 
-      # Step 2: List Files on the Server
-      - name: List Files on Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: 172.188.42.27
-          username: azureuser
-          key: ${{ secrets.SSH_PRIVATE_KEY }}  # Your SSH private key from GitHub Secrets
-          script: |
-            echo "Listing all files in the current directory:"
-            ls -la  # List all files
+      - name: List files on remote server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          ssh -i private_key azureuser@172.188.42.27 "ls -la"

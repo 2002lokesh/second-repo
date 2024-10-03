@@ -1,22 +1,28 @@
-name: SSH into Azure Server
+name: Restart Uvicorn on Server
 
 on:
   push:
     branches:
-      - main  # Change this to your default branch if necessary
+      - main  # Trigger on push to the main branch
 
 jobs:
-  ssh-into-azure:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Create PEM file from secret
-        run: |
-          echo "${{ secrets.AZURE_PEM_FILE }}" > development.pem
-          chmod 600 development.pem  # Set permissions
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: SSH into Azure Server
+      - name: Restart Uvicorn via SSH
         run: |
-          ssh -i Development.pem azureuser@172.188.42.27 "echo 'Successfully connected to Azure!'"
+          ssh -o StrictHostKeyChecking=no -i chatbot_key.pem azureuser@4.145.88.243 << 'EOF'
+            sudo systemctl restart uvicorn
+            sudo systemctl status uvicorn
+          EOF
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}

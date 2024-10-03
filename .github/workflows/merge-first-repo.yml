@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout only 'test' folder
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          path: test  # Pull only the 'test' folder from your repo
 
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.5.4  # Use the latest stable version
@@ -21,6 +24,7 @@ jobs:
       - name: Restart Uvicorn via SSH
         run: |
           ssh -o StrictHostKeyChecking=no -i chatbot_key.pem azureuser@4.145.88.243 << 'EOF'
+            cd test  # Navigate to the 'test' folder
             sudo systemctl restart uvicorn
             sudo systemctl status uvicorn
           EOF

@@ -1,39 +1,27 @@
-name: Restart Uvicorn on Server
+name: Restart Odoo on Server
 
 on:
-  push:
-    branches:
-      - main  # Trigger on push to the main branch
+  workflow_dispatch:  # Allows manual trigger via GitHub UI
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 1  # Fetch only the latest commit
 
-      - name: Get latest commit ID for 'test' folder
-        run: |
-          COMMIT_ID=$(git log -1 --format="%H" -- test)  # Fetch the latest commit ID for the 'test' folder
-          echo "Latest commit ID for 'test' folder: $COMMIT_ID"
-          echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_ENV  # Set this as an environment variable for later steps
-
-      - name: Pull only the 'test' folder from the latest commit
-        run: |
-          git checkout ${{ env.COMMIT_ID }} -- test  # Checkout only the 'test' folder from the specific commit
+      - name: Pull latest changes
+        run: git pull origin main
 
       - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.5.4  # Use the latest stable version
+        uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Restart Uvicorn via SSH
+      - name: Restart Odoo via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no -i chatbot_key.pem azureuser@4.145.88.243 << 'EOF'
-            cd test  # Navigate to the 'test' folder
+          ssh -o StrictHostKeyChecking=no -i D:/DEV/Development.pem azureuser@172.188.42.27 << 'EOF'
             sudo systemctl restart uvicorn
             sudo systemctl status uvicorn
           EOF

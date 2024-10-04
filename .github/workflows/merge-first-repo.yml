@@ -10,11 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout only 'test' folder
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
-          path: test  # Pull only the 'test' folder from your repo
+          fetch-depth: 1  # Fetch only the latest commit
+
+      - name: Get latest commit ID for 'test' folder
+        run: |
+          COMMIT_ID=$(git log -1 --format="%H" -- test)  # Fetch the latest commit ID for the 'test' folder
+          echo "Latest commit ID for 'test' folder: $COMMIT_ID"
+          echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_ENV  # Set this as an environment variable for later steps
+
+      - name: Pull only the 'test' folder from the latest commit
+        run: |
+          git checkout ${{ env.COMMIT_ID }} -- test  # Checkout only the 'test' folder from the specific commit
 
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.5.4  # Use the latest stable version

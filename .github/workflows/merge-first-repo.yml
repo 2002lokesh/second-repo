@@ -21,7 +21,7 @@ jobs:
 
       - name: Restart Odoo via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no -i D:/DEV/Development.pem azureuser@172.188.42.27 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ssh -i chatbot_key.pem azureuser@4.145.88.243<< 'EOF'
             sudo systemctl restart uvicorn
             sudo systemctl status uvicorn
           EOF

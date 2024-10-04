@@ -23,9 +23,9 @@ jobs:
 
       - name: Restart Odoo via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no -i C:/Users/ADMIN/Downloads/chatbot_key.pem azureuser@4.145.88.243 << 'EOF'
-            sudo systemctl restart uvicorn
-            sudo systemctl status uvicorn
+          ssh -o StrictHostKeyChecking=no -i D:/DEV/Development.pem azureuser@172.188.42.27 << 'EOF'
+            sudo service odoo restart
+            sudo service odoo status
           EOF
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}

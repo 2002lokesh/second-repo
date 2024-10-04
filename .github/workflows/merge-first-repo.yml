@@ -1,7 +1,9 @@
 name: Restart Odoo on Server
 
 on:
-  workflow_dispatch:  # Allows manual trigger via GitHub UI
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
 
 jobs:
   deploy:
@@ -15,13 +17,13 @@ jobs:
         run: git pull origin main
 
       - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.5.4
+        uses: webfactory/ssh-agent@v0.5.4  # Use the latest stable version
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Restart Odoo via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no ssh -i chatbot_key.pem azureuser@4.145.88.243<< 'EOF'
+          ssh -o StrictHostKeyChecking=no -i C:/Users/ADMIN/Downloads/chatbot_key.pem azureuser@4.145.88.243 << 'EOF'
             sudo systemctl restart uvicorn
             sudo systemctl status uvicorn
           EOF
